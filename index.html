@@ -28,75 +28,75 @@
 </script>
   
 <script>
-// Teacher code → name mapping
+// Teacher code → name mapping (unchanged from your last version)
 const teacherMap = {
   "FL": "FLYNN J",
   "PE": "PETERS F",
   "AG": "ANGELL J",
-  "FE": "FURZE Mrs B",          // kept from old list
+  "FE": "FURZE Mrs B",
   "PL": "POOLE G",
   "AN": "ANDER Mrs JD",
   "GD": "GIDDY G",
   "PR": "PRASAD J",
   "AR": "ARCHER R",
-  "GO": "GOODALL Mrs H",        // kept from old list
-  "ΡΙ": "PRICE L",              // kept from old list (Greek pi?)
-  "ARM": "ARMES T",             // kept from old list
-  "JI": "JIN Ms C",             // kept from old list
+  "GO": "GOODALL Mrs H",
+  "ΡΙ": "PRICE L",
+  "ARM": "ARMES T",
+  "JI": "JIN Ms C",
   "PN": "PINER A",
-  "AK": "ATKINS DP",            // updated from new list
-  "RAFT": "RATFORD Mrs R",      // kept from old list
+  "AK": "ATKINS DP",
+  "RAFT": "RATFORD Mrs R",
   "JY": "JOYCE Ms R",
   "RB": "ROBINSON D",
   "BN": "BENNETT B",
-  "HA": "HACKER MS K",          // updated from new
+  "HA": "HACKER MS K",
   "RO": "ROBERTS Mrs A",
-  "BU": "BUBLITZ D",            // updated from new
+  "BU": "BUBLITZ D",
   "HZ": "HALE Mrs L",
-  "RN": "ROBERTSON MSR",        // new version
+  "RN": "ROBERTSON MSR",
   "CD": "CARDY A",
   "HN": "HANNAH G",
-  "RW": "ROWSON K",             // updated from new
+  "RW": "ROWSON K",
   "CK": "CLARK R",
   "HT": "HARTMANN F",
   "RU": "RUSSELL H",
-  "CL": "CLEAVER M",            // new version (old had CLARK-PUIAT under TC)
+  "CL": "CLEAVER M",
   "HV": "HARVEY C",
   "SU": "SAUL G",
   "CE": "CLELAND Mrs A",
   "HW": "HEWLETT P",
   "SL": "SILVA W",
   "CT": "COATES H",
-  "HL": "HOLDOM Mrs A",         // kept from old list
+  "HL": "HOLDOM Mrs A",
   "SO": "SOMERS M",
   "CA": "COOPER MS A",
   "HP": "HOPE A",
-  "SOM": "SOMERS Mrs S",        // kept from old list
+  "SOM": "SOMERS Mrs S",
   "CP": "COOPER Mrs A",
-  "IN": "INGLE Mrs S",          // updated from new
+  "IN": "INGLE Mrs S",
   "ST": "STANDISH T",
   "CO": "CORLETT B",
-  "KG": "KEEGAN J",             // fixed spacing
+  "KG": "KEEGAN J",
   "SN": "STONES J",
   "KC": "CRADDOCK Ms K",
   "KL": "KILGOUR Mrs K",
   "SG": "SIGURDSSON M",
   "CY": "CREERY N",
   "LC": "LOCK A",
-  "ΤΟ": "TOWNES M",             // kept from old list
+  "ΤΟ": "TOWNES M",
   "CR": "CREERY R",
   "LU": "LUKE C",
   "TN": "TRENT Ms H",
-  "DR": "DARKE Mrs S",          // kept from old list
-  "MK": "MAAKA M",              // updated from new
+  "DR": "DARKE Mrs S",
+  "MK": "MAAKA M",
   "TR": "TREWEEK V",
   "DA": "DAVIES E",
-  "JM": "MARAKI J",             // fixed spacing
+  "JM": "MARAKI J",
   "TG": "TUNG MS L",
-  "DAV": "DAVIS G",             // kept from old list
+  "DAV": "DAVIS G",
   "MH": "MARSHALL J",
   "TE": "TURNER J",
-  "DAVY": "DAVY J",             // kept from old list
+  "DAVY": "DAVY J",
   "MA": "MATUKU Mrs C",
   "VA": "VAN WYK D",
   "DB": "DOBBIE J",
@@ -104,25 +104,23 @@ const teacherMap = {
   "WA": "WATTS M",
   "DO": "DROUGHT W",
   "MG": "MCGRATH T",
-  "WG": "WIRINGI J",            // fixed spacing
+  "WG": "WIRINGI J",
   "DN": "DUNNET B",
   "MO": "MOORE Mrs T",
   "WI": "WISNEWSKI R",
-  "ED": "EDMONDS J",            // kept from old list
+  "ED": "EDMONDS J",
   "MU": "MUIR S",
   "WR": "WRIGHT A",
-  "FQ": "FARQUHAR J",           // updated from new
+  "FQ": "FARQUHAR J",
   "KP": "PARKER Dr K",
-  "WT": "WRIGHT Dr J",          // kept from old list
+  "WT": "WRIGHT Dr J",
   "FI": "FITZPATRICK B",
-  "PG": "PENG S",               // added back — was missing earlier
+  "PG": "PENG S",
   "YO": "YOUNGER L",
-
-  // All new entries from your latest list (no removals)
   "HR": "HANAN R",
   "RA": "ARCHER Ms R",
   "PI": "PRICEL",
-  "AR": "ARCHERR",              // kept as listed even if typo
+  "AR": "ARCHERR",
   "RN": "ROBERTSON MSR",
   "BA": "BAILEY-NOWELL Ms A",
   "HK": "HAWKINS J",
@@ -180,7 +178,15 @@ function parseAndShow(ics) {
 
   for (let ev of events) {
     let subj = ev.summary?.trim();
-    if (!subj || subj.includes("ASSEMBLY") || subj.includes("HUIA") || subj.includes("BARAK")) continue;
+    // Skip assemblies + all four houses
+    if (!subj || 
+        subj.includes("ASSEMBLY") || 
+        subj.includes("BARAK") || 
+        subj.includes("SYME") || 
+        subj.includes("DONNELLY") || 
+        subj.includes("HATHERLY")) {
+      continue;
+    }
 
     let classCode = subj.split(" ")[0];
 
@@ -247,11 +253,34 @@ function parseAndShow(ics) {
   }
 
   document.getElementById('result').innerHTML = html;
+
+  // Only increment counter after successful parse (real upload happened)
+  incrementUploadCounter();
+}
+
+// Counter - only called after successful .ics processing
+function incrementUploadCounter() {
+  fetch('https://api.counterapi.xyz/hit/undercover-computings-team-2605/timetable-processed/count', { mode: 'no-cors' })
+    .catch(() => {});
 }
 </script>
 
+<!-- Simple counter display at bottom -->
+<div style="text-align: center; margin: 3rem 0; color: #777; font-size: 0.9rem;">
+  Total timetables processed: <span id="uploadCount">loading...</span>
+</div>
+
+<script>
+// Load current count on page load (non-blocking)
+fetch('https://api.counterapi.xyz/get/undercover-computings-team-2605/timetable-processed/count', { mode: 'no-cors' })
+  .then(r => r.json ? r.json() : Promise.reject())
+  .then(data => {
+    document.getElementById('uploadCount').innerText = data.value || 'many';
+  })
+  .catch(() => {
+    document.getElementById('uploadCount').innerText = 'many';
+  });
+</script>
+
 </body>
-
 </html>
-
-
