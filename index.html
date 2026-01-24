@@ -16,19 +16,19 @@
   <br><br>
   <button onclick="loadFile()">Load my timetable</button>
   <div class="instructions-link">
-    <a href="instructions.html">How to get your ICS file →</a>
+    <a href="instructions.html" target="_blank">How to get your ICS file →</a>
   </div>
 </div>
 
 <div id="result"></div>
 
+<!-- Global upload counter display -->
+<div id="global-counter" style="text-align: center; margin: 3rem 0; color: #777; font-size: 0.95rem;">
+  Total timetables processed: <span id="upload-count">loading...</span>
+</div>
+
 <script>
-  fetch("https://api.counterapi.dev/v2/undercover-computings-team-2605/timetable/up")
-    .catch(() => {});
-</script>
-  
-<script>
-// Teacher code → name mapping (unchanged from your last version)
+// Teacher code → name mapping (your latest merged version)
 const teacherMap = {
   "FL": "FLYNN J",
   "PE": "PETERS F",
@@ -178,7 +178,6 @@ function parseAndShow(ics) {
 
   for (let ev of events) {
     let subj = ev.summary?.trim();
-    // Skip assemblies + all four houses
     if (!subj || 
         subj.includes("ASSEMBLY") || 
         subj.includes("BARAK") || 
@@ -254,32 +253,37 @@ function parseAndShow(ics) {
 
   document.getElementById('result').innerHTML = html;
 
-  // Only increment counter after successful parse (real upload happened)
+  // Increment the global counter after successful parse
   incrementUploadCounter();
 }
 
-// Counter - only called after successful .ics processing
+// Increment counter (only on successful upload/parse)
 function incrementUploadCounter() {
-  fetch('https://api.counterapi.xyz/hit/undercover-computings-team-2605/timetable-processed/count', { mode: 'no-cors' })
-    .catch(() => {});
+  fetch('https://api.counterapi.dev/v2/undercover-computings-team-2605/timetable/up', { mode: 'no-cors' })
+    .catch(() => {});  // silent fail if blocked or offline
 }
-</script>
 
-<!-- Simple counter display at bottom -->
-<div style="text-align: center; margin: 3rem 0; color: #777; font-size: 0.9rem;">
-  Total timetables processed: <span id="uploadCount">loading...</span>
-</div>
+// Load current count on page load
+function loadUploadCount() {
+  fetch('https://api.counterapi.dev/v2/undercover-computings-team-2605/timetable', { mode: 'no-cors' })
+    .then(response => {
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    })
+    .then(data => {
+      if (data && data.data && typeof data.data.up_count === 'number') {
+        document.getElementById('upload-count').innerText = data.data.up_count;
+      } else {
+        document.getElementById('upload-count').innerText = 'many';
+      }
+    })
+    .catch(() => {
+      document.getElementById('upload-count').innerText = 'many';  // fallback
+    });
+}
 
-<script>
-// Load current count on page load (non-blocking)
-fetch('https://api.counterapi.xyz/get/undercover-computings-team-2605/timetable-processed/count', { mode: 'no-cors' })
-  .then(r => r.json ? r.json() : Promise.reject())
-  .then(data => {
-    document.getElementById('uploadCount').innerText = data.value || 'many';
-  })
-  .catch(() => {
-    document.getElementById('uploadCount').innerText = 'many';
-  });
+// Run on page load
+document.addEventListener('DOMContentLoaded', loadUploadCount);
 </script>
 
 </body>
