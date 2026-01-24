@@ -22,13 +22,13 @@
 
 <div id="result"></div>
 
-<!-- Global upload counter display -->
+<!-- Global counter display -->
 <div id="global-counter" style="text-align: center; margin: 3rem 0; color: #777; font-size: 0.95rem;">
   Total timetables processed: <span id="upload-count">loading...</span>
 </div>
 
 <script>
-// Teacher code → name mapping (your latest merged version)
+// Teacher code → name mapping (unchanged)
 const teacherMap = {
   "FL": "FLYNN J",
   "PE": "PETERS F",
@@ -253,21 +253,28 @@ function parseAndShow(ics) {
 
   document.getElementById('result').innerHTML = html;
 
-  // Increment the global counter after successful parse
+  // Increment counter after successful parse
   incrementUploadCounter();
 }
 
-// Increment counter (only on successful upload/parse)
+// Increment the counter
 function incrementUploadCounter() {
-  fetch('https://api.counterapi.dev/v2/undercover-computings-team-2605/timetable/up', { mode: 'no-cors' })
-    .catch(() => {});  // silent fail if blocked or offline
+  fetch('https://api.counterapi.dev/v2/undercover-computings-team-2605/timetable/up', {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'no-cache'
+  }).catch(() => {});  // silent fail is fine
 }
 
-// Load current count on page load
+// Load and display current up_count
 function loadUploadCount() {
-  fetch('https://api.counterapi.dev/v2/undercover-computings-team-2605/timetable', { mode: 'no-cors' })
+  fetch('https://api.counterapi.dev/v2/undercover-computings-team-2605/timetable', {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'no-cache'
+  })
     .then(response => {
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!response.ok) throw new Error('Response not OK');
       return response.json();
     })
     .then(data => {
@@ -278,11 +285,11 @@ function loadUploadCount() {
       }
     })
     .catch(() => {
-      document.getElementById('upload-count').innerText = 'many';  // fallback
+      document.getElementById('upload-count').innerText = 'many';
     });
 }
 
-// Run on page load
+// Load count when page opens
 document.addEventListener('DOMContentLoaded', loadUploadCount);
 </script>
 
