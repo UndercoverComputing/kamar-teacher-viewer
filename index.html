@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teacher Viewer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Teacher Viewer</h1>
+
+<div id="upload-area">
+  <p>Drop your .ics file here or click to select it</p>
+  <input type="file" id="fileInput" accept=".ics,text/calendar" />
+  <br><br>
+  <button onclick="loadFile()">Load my timetable</button>
+  <div class="instructions-link">
+    <a href="instructions.html">How to get your ICS file →</a>
+  </div>
+</div>
+
+<div id="result"></div>
+
+<script>
+// Teacher code → name mapping (unchanged)
+const teacherMap = {
+  "FL": "FLYNN J",
+  "PE": "PETERS F",
+  "AG": "ANGELL J",
+  "FE": "FURZE Mrs B",
+  "PL": "POOLE G",
+  "AN": "ANDER Mrs JD",
+  "GD": "GIDDY G",
+  "PR": "PRASAD J",
+  "AR": "ARCHER R",
+  "GO": "GOODALL Mrs H",
+  "ΡΙ": "PRICE L",
+  "ARM": "ARMES T",
+  "JI": "JIN Ms C",
+  "PN": "PINER A",
+  "AK": "ATKINS D P",
+  "RAFT": "RATFORD Mrs R",
+  "JY": "JOYCE Ms R",
+  "RB": "ROBINSON D",
+  "BN": "BENNETT B",
+  "HA": "HACKER Ms K",
+  "RO": "ROBERTS Mrs A",
+  "BU": "BUBLITZ DJ",
+  "HZ": "HALE Mrs L",
+  "RN": "ROBERTSON Mrs R",
+  "CD": "CARDY A",
+  "HN": "HANNAH G",
+  "RW": "ROWSON KT",
+  "CK": "CLARK R",
+  "HT": "HARTMANN F",
+  "RU": "RUSSELL H",
+  "CL": "CLARK-PUIAT",
+  "HV": "HARVEY C",
+  "SU": "SAUL G",
+  "CE": "CLELAND Mrs A",
+  "HW": "HEWLETT P",
+  "SL": "SILVA W",
+  "CT": "COATES H",
+  "HL": "HOLDOM Mrs A",
+  "SO": "SOMERS M",
+  "CA": "COOPER MS A",
+  "HP": "HOPE A",
+  "SOM": "SOMERS Mrs S",
+  "CP": "COOPER Mrs A",
+  "IN": "INGLE MS S",
+  "ST": "STANDISH T",
+  "CO": "CORLETT B",
+  "KG": "KEEGAN J",
+  "SN": "STONES J",
+  "KC": "CRADDOCK Ms K",
+  "KL": "KILGOUR Mrs K",
+  "SG": "SIGURDSSON M",
+  "CY": "CREERY N",
+  "LC": "LOCK A",
+  "ΤΟ": "TOWNES M",
+  "CR": "CREERY R",
+  "LU": "LUKE C",
+  "TN": "TRENT Ms H",
+  "DR": "DARKE Mrs S",
+  "MK": "MAAKA M M",
+  "TR": "TREWEEK V",
+  "DA": "DAVIES E",
+  "JM": "MARAKI J",
+  "TG": "TUNG MS L",
+  "DAV": "DAVIS G",
+  "MH": "MARSHALL J",
+  "TE": "TURNER J",
+  "DAVY": "DAVY J",
+  "MA": "MATUKU Mrs C",
+  "VA": "VAN WYK D",
+  "DB": "DOBBIE J",
+  "MX": "MAXIM Mrs R",
+  "WA": "WATTS M",
+  "DO": "DROUGHT W",
+  "MG": "MCGRATH T",
+  "WG": "WIRINGI J",
+  "DN": "DUNNET B",
+  "MO": "MOORE Mrs T",
+  "WI": "WISNEWSKI R",
+  "ED": "EDMONDS J",
+  "MU": "MUIR S",
+  "WR": "WRIGHT A",
+  "FQ": "FARQUHAR JB",
+  "KP": "PARKER Dr K",
+  "WT": "WRIGHT Dr J",
+  "FI": "FITZPATRICK B",
+  "PG": "PENG S",
+  "YO": "YOUNGER L",
+};
+
+function loadFile() {
+  const fileInput = document.getElementById('fileInput');
+  const file = fileInput.files[0];
+  if (!file) {
+    alert("Please select your .ics file first.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    parseAndShow(e.target.result);
+  };
+  reader.readAsText(file);
+}
+
+function parseAndShow(ics) {
+  const lines = ics.split(/\r?\n/);
+  let events = [];
+  let current = null;
+
+  for (let line of lines) {
+    line = line.trim();
+    if (line === "BEGIN:VEVENT") {
+      current = {};
+    } else if (line === "END:VEVENT") {
+      if (current && current.summary) events.push(current);
+      current = null;
+    } else if (current) {
+      if (line.startsWith("SUMMARY:")) current.summary = line.slice(8).trim();
+      if (line.startsWith("LOCATION:")) current.location = line.slice(9).trim();
+      if (line.startsWith("DESCRIPTION:")) current.description = line.slice(12).trim();
+    }
+  }
+
+  const subjects = {};
+
+  for (let ev of events) {
+    let subj = ev.summary?.trim();
+    if (!subj || subj.includes("ASSEMBLY") || subj.includes("HUIA") || subj.includes("BARAK")) continue;
+
+    let classCode = subj.split(" ")[0];
+
+    if (!subjects[classCode]) {
+      subjects[classCode] = {
+        display: subj,
+        rooms: new Map(),
+        teachers: new Map(),
+        count: 0
+      };
+    }
+
+    const s = subjects[classCode];
+    s.count++;
+
+    if (ev.location) {
+      s.rooms.set(ev.location, (s.rooms.get(ev.location) || 0) + 1);
+    }
+    if (ev.description && ev.description.length <= 5 && /^[A-Z]+$/.test(ev.description)) {
+      const code = ev.description.trim();
+      s.teachers.set(code, (s.teachers.get(code) || 0) + 1);
+    }
+  }
+
+  let html = '<h2>Your Classes</h2>';
+
+  if (Object.keys(subjects).length === 0) {
+    html += '<p class="no-data">No regular classes found in this file.</p>';
+  } else {
+    html += '<table><thead><tr><th>Class</th><th>Location</th><th>Teacher</th></tr></thead><tbody>';
+
+    Object.keys(subjects).sort().forEach(code => {
+      const s = subjects[code];
+
+      let room = "—";
+      if (s.rooms.size > 0) {
+        const top = [...s.rooms.entries()].sort((a,b)=>b[1]-a[1])[0];
+        room = top[0];
+      }
+
+      let teacherDisplay = "—";
+      if (s.teachers.size > 0) {
+        const top = [...s.teachers.entries()].sort((a,b)=>b[1]-a[1])[0];
+        const code = top[0];
+
+        if (code === "NTECH") {
+          teacherDisplay = "NTECH<br><span class='unavailable'>(unavailable)</span>";
+        } else {
+          const name = teacherMap[code];
+          teacherDisplay = code;
+          if (name) teacherDisplay += `<br><strong>${name}</strong>`;
+          else teacherDisplay += `<br><span class='unavailable'>(name not listed)</span>`;
+        }
+      }
+
+      html += `<tr>
+        <td class="subject">${s.display}</td>
+        <td>${room}</td>
+        <td>${teacherDisplay}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+  }
+
+  document.getElementById('result').innerHTML = html;
+}
+</script>
+
+</body>
+</html>
