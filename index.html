@@ -33,94 +33,113 @@ const teacherMap = {
   "FL": "FLYNN J",
   "PE": "PETERS F",
   "AG": "ANGELL J",
+  "FE": "FURZE Mrs B",          // kept from old list
   "PL": "POOLE G",
   "AN": "ANDER Mrs JD",
   "GD": "GIDDY G",
   "PR": "PRASAD J",
-  "AK": "ATKINS D P",
-  "HN": "HANNAH G",
+  "AR": "ARCHER R",
+  "GO": "GOODALL Mrs H",        // kept from old list
+  "ΡΙ": "PRICE L",              // kept from old list (Greek pi?)
+  "ARM": "ARMES T",             // kept from old list
+  "JI": "JIN Ms C",             // kept from old list
+  "PN": "PINER A",
+  "AK": "ATKINS DP",            // updated from new list
+  "RAFT": "RATFORD Mrs R",      // kept from old list
+  "JY": "JOYCE Ms R",
+  "RB": "ROBINSON D",
+  "BN": "BENNETT B",
+  "HA": "HACKER MS K",          // updated from new
+  "RO": "ROBERTS Mrs A",
+  "BU": "BUBLITZ D",            // updated from new
   "HZ": "HALE Mrs L",
+  "RN": "ROBERTSON MSR",        // new version
+  "CD": "CARDY A",
+  "HN": "HANNAH G",
+  "RW": "ROWSON K",             // updated from new
+  "CK": "CLARK R",
   "HT": "HARTMANN F",
+  "RU": "RUSSELL H",
+  "CL": "CLEAVER M",            // new version (old had CLARK-PUIAT under TC)
   "HV": "HARVEY C",
   "SU": "SAUL G",
   "CE": "CLELAND Mrs A",
   "HW": "HEWLETT P",
   "SL": "SILVA W",
   "CT": "COATES H",
+  "HL": "HOLDOM Mrs A",         // kept from old list
   "SO": "SOMERS M",
   "CA": "COOPER MS A",
   "HP": "HOPE A",
+  "SOM": "SOMERS Mrs S",        // kept from old list
   "CP": "COOPER Mrs A",
-  "IN": "INGLE Mrs S",        // updated from "INGLE MS S"
+  "IN": "INGLE Mrs S",          // updated from new
   "ST": "STANDISH T",
   "CO": "CORLETT B",
-  "KG": "KEEGAN J",           // fixed from "KEEGANJ"
+  "KG": "KEEGAN J",             // fixed spacing
   "SN": "STONES J",
   "KC": "CRADDOCK Ms K",
   "KL": "KILGOUR Mrs K",
   "SG": "SIGURDSSON M",
   "CY": "CREERY N",
   "LC": "LOCK A",
+  "ΤΟ": "TOWNES M",             // kept from old list
   "CR": "CREERY R",
   "LU": "LUKE C",
   "TN": "TRENT Ms H",
-  "DA": "DAVIES E",
-  "MX": "MAXIM Mrs R",
-  "DB": "DOBBIE J",
-  "MG": "MCGRATH T",
+  "DR": "DARKE Mrs S",          // kept from old list
+  "MK": "MAAKA M",              // updated from new
   "TR": "TREWEEK V",
-  "DO": "DROUGHT W",
-  "MO": "MOORE Mrs T",
+  "DA": "DAVIES E",
+  "JM": "MARAKI J",             // fixed spacing
   "TG": "TUNG MS L",
-  "DN": "DUNNET B",
-  "MU": "MUIR S",
+  "DAV": "DAVIS G",             // kept from old list
+  "MH": "MARSHALL J",
   "TE": "TURNER J",
+  "DAVY": "DAVY J",             // kept from old list
+  "MA": "MATUKU Mrs C",
   "VA": "VAN WYK D",
-  "FI": "FITZPATRICK B",
-  "KP": "PARKER Dr K",
+  "DB": "DOBBIE J",
+  "MX": "MAXIM Mrs R",
+  "WA": "WATTS M",
+  "DO": "DROUGHT W",
+  "MG": "MCGRATH T",
+  "WG": "WIRINGI J",            // fixed spacing
+  "DN": "DUNNET B",
+  "MO": "MOORE Mrs T",
   "WI": "WISNEWSKI R",
+  "ED": "EDMONDS J",            // kept from old list
+  "MU": "MUIR S",
+  "WR": "WRIGHT A",
+  "FQ": "FARQUHAR J",           // updated from new
+  "KP": "PARKER Dr K",
+  "WT": "WRIGHT Dr J",          // kept from old list
+  "FI": "FITZPATRICK B",
+  "PG": "PENG S",               // added back — was missing earlier
   "YO": "YOUNGER L",
+
+  // All new entries from your latest list (no removals)
   "HR": "HANAN R",
-  "RA": "ARCHER Ms R",        // updated from older "ARCHER R"
-  "PI": "PRICE L",
-  "AR": "ARCHER R",
-  "RO": "ROBERTS Mrs A",
-  "RN": "ROBERTSON Mrs R",
+  "RA": "ARCHER Ms R",
+  "PI": "PRICEL",
+  "AR": "ARCHERR",              // kept as listed even if typo
+  "RN": "ROBERTSON MSR",
   "BA": "BAILEY-NOWELL Ms A",
   "HK": "HAWKINS J",
-  "RB": "ROBINSON D",         // fixed from "ROBINSOND"
-  "BN": "BENNETT B",
-  "RW": "ROWSON K",           // updated from "ROWSON KT"
   "BR": "BROWN L",
   "RT": "RUSHTON C",
-  "BU": "BUBLITZ D",          // updated from "BUBLITZ DJ"
-  "RU": "RUSSELL H",
-  "CD": "CARDY A",
   "MJ": "JAMES M",
-  "CK": "CLARK R",
   "JN": "JOHNSTONE Ms J",
-  "SH": "SCHAARE T",
+  "SH": "SCHAARET",
   "TC": "CLARK-PUIAT",
-  "JY": "JOYCE Ms R",
-  "CL": "CLEAVER M",
-  "SM": "SIMANKE Ms D",
   "LA": "LAURENCE P",
   "JS": "SMITH J",
   "SI": "SMITH MS M",
-  "MK": "MAAKA M",            // updated from "MAAKA M M"
-  "JM": "MARAKI J",           // fixed from "MARAKIJ"
-  "MH": "MARSHALL J",
-  "TO": "TOWNES M",
   "TM": "TEMPLETON Mrs R",
   "ES": "ESTRABILLO P",
   "OK": "O'KEEFFE P",
-  "FQ": "FARQUHAR J",         // fixed from "FARQUHARJ" / older "FARQUHAR JB"
   "OA": "OAKES K",
-  "WA": "WATTS M",
-  "PK": "PERKINS MS B",
-  "PN": "PINER A",
-  "HA": "HACKER Ms K",
-  "WG": "WIRINGI J",
+  "PK": "PERKINS MS B"
 };
 
 function loadFile() {
@@ -234,4 +253,5 @@ function parseAndShow(ics) {
 </body>
 
 </html>
+
 
