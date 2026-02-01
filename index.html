@@ -179,7 +179,7 @@ function parseAndShow(ics) {
       subjects[classCode] = {
         display: subj,
         rooms: new Map(),
-        teachers: new Set(),          // ← changed: use Set to collect unique codes
+        teachers: [],  // array to preserve order
         count: 0
       };
     }
@@ -191,14 +191,16 @@ function parseAndShow(ics) {
       s.rooms.set(ev.location, (s.rooms.get(ev.location) || 0) + 1);
     }
 
-    if (ev.description && ev.description.length <= 10) {  // allow longer if comma-separated
-      // Split on comma, trim each part, filter valid-looking codes
+    if (ev.description) {
+      // Split on comma or space, clean, avoid duplicates
       const codes = ev.description
-        .split(',')
-        .map(c => c.trim())
-        .filter(c => /^[A-Z]{2,}$/.test(c));  // rough filter: uppercase letters only, ≥2 chars
+        .split(/[, ]+/)
+        .map(c => c.trim().toUpperCase())
+        .filter(c => /^[A-Z]{2,}$/.test(c));
 
-      codes.forEach(code => s.teachers.add(code));
+      codes.forEach(code => {
+        if (!s.teachers.includes(code)) s.teachers.push(code);
+      });
     }
   }
 
@@ -207,26 +209,26 @@ function parseAndShow(ics) {
   if (Object.keys(subjects).length === 0) {
     html += '<p class="no-data">No regular classes found in this file.</p>';
   } else {
-    html += '<table><thead><tr><th>Class</th><th>Location</th><th>Teacher(s)</th></tr></thead><tbody>';
+    html += '<table><thead><tr><th>Class</th><th>Location</th><th>Teacher</th></tr></thead><tbody>';
 
     Object.keys(subjects).sort().forEach(code => {
       const s = subjects[code];
 
-      // Most common room (same as before)
       let room = "—";
       if (s.rooms.size > 0) {
         const top = [...s.rooms.entries()].sort((a,b)=>b[1]-a[1])[0];
         room = top[0];
       }
 
-      // All unique teachers
       let teacherDisplay = "—";
-      if (s.teachers.size > 0) {
-        const teacherList = [...s.teachers].map(tcode => {
-          const name = teacherMap[tcode];
-          return name ? `${tcode} (${name})` : tcode;
-        });
-        teacherDisplay = teacherList.join(", ");
+      if (s.teachers.length > 0) {
+        const codesLine = s.teachers.join(',');
+        const namesLine = s.teachers.map(tcode => {
+          const name = teacherMap[tcode] || '';
+          return name ? `<strong>${name}</strong>` : '';
+        }).join(', ');
+
+        teacherDisplay = `${codesLine}<br>${namesLine}`;
       }
 
       html += `<tr>
@@ -241,7 +243,6 @@ function parseAndShow(ics) {
 
   document.getElementById('result').innerHTML = html;
 
-  // Increment counter after successful parse
   incrementUploadCounter();
 }
 
@@ -283,6 +284,7 @@ document.addEventListener('DOMContentLoaded', loadUploadCount);
 
 </body>
 </html>
+
 
 
 
