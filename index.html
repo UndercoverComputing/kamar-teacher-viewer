@@ -179,7 +179,7 @@ function parseAndShow(ics) {
       subjects[classCode] = {
         display: subj,
         rooms: new Map(),
-        teachers: new Map(),
+        teachers: new Set(),          // ← changed: use Set to collect unique codes
         count: 0
       };
     }
@@ -190,9 +190,15 @@ function parseAndShow(ics) {
     if (ev.location) {
       s.rooms.set(ev.location, (s.rooms.get(ev.location) || 0) + 1);
     }
-    if (ev.description && ev.description.length <= 5 && /^[A-Z]+$/.test(ev.description)) {
-      const code = ev.description.trim();
-      s.teachers.set(code, (s.teachers.get(code) || 0) + 1);
+
+    if (ev.description && ev.description.length <= 10) {  // allow longer if comma-separated
+      // Split on comma, trim each part, filter valid-looking codes
+      const codes = ev.description
+        .split(',')
+        .map(c => c.trim())
+        .filter(c => /^[A-Z]{2,}$/.test(c));  // rough filter: uppercase letters only, ≥2 chars
+
+      codes.forEach(code => s.teachers.add(code));
     }
   }
 
@@ -201,30 +207,26 @@ function parseAndShow(ics) {
   if (Object.keys(subjects).length === 0) {
     html += '<p class="no-data">No regular classes found in this file.</p>';
   } else {
-    html += '<table><thead><tr><th>Class</th><th>Location</th><th>Teacher</th></tr></thead><tbody>';
+    html += '<table><thead><tr><th>Class</th><th>Location</th><th>Teacher(s)</th></tr></thead><tbody>';
 
     Object.keys(subjects).sort().forEach(code => {
       const s = subjects[code];
 
+      // Most common room (same as before)
       let room = "—";
       if (s.rooms.size > 0) {
         const top = [...s.rooms.entries()].sort((a,b)=>b[1]-a[1])[0];
         room = top[0];
       }
 
+      // All unique teachers
       let teacherDisplay = "—";
       if (s.teachers.size > 0) {
-        const top = [...s.teachers.entries()].sort((a,b)=>b[1]-a[1])[0];
-        const code = top[0];
-
-        if (code === "NTECH") {
-          teacherDisplay = "NTECH<br><span class='unavailable'>(unavailable)</span>";
-        } else {
-          const name = teacherMap[code];
-          teacherDisplay = code;
-          if (name) teacherDisplay += `<br><strong>${name}</strong>`;
-          else teacherDisplay += `<br><span class='unavailable'>(name not listed)</span>`;
-        }
+        const teacherList = [...s.teachers].map(tcode => {
+          const name = teacherMap[tcode];
+          return name ? `${tcode} (${name})` : tcode;
+        });
+        teacherDisplay = teacherList.join(", ");
       }
 
       html += `<tr>
@@ -281,6 +283,7 @@ document.addEventListener('DOMContentLoaded', loadUploadCount);
 
 </body>
 </html>
+
 
 
 
